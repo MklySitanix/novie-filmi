@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Новые фильмы — Фильмы</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-overlay">
+
+        <!-- HEADER -->
+        <header>
+            <div class="hamburger" id="hamburger" aria-label="Меню" role="button" tabindex="0"><div class="bar"></div></div>
+
+            <div class="logo-placeholder" aria-hidden="true">
+                <a href="index.html"><img src="img/logo.png" alt="Логотип" style="height:42px;object-fit:contain"></a>
+            </div>
+
+            <nav class="nav-cats" aria-label="Главная навигация">
+                <a href="index.html" class="active">Главная</a>
+                <a href="movies.html">Фильмы</a>
+                <a href="serials.html">Сериалы</a>
+                <a href="animation.html">Анимация</a>
+                <a href="tv.html">ТВ</a>
+            </nav>
+
+            <div class="header-actions">
+                <!-- Поиск: отправляет на search.html?q=... -->
+                <form id="searchForm" class="search" action="search.html" method="get" role="search" aria-label="Поиск">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"></circle></svg>
+                    <input name="q" id="searchInput" type="text" placeholder="Поиск фильмов, сериалов..." aria-label="Поиск">
+                </form>
+
+                <!-- Войти — перенаправление на страницу авторизации (auth.html) -->
+                <!-- заменяем на единый контейнер -->
+                <div id="authArea">
+                    <a id="accountBtn" class="btn-login" href="auth.html">Войти</a>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- SIDEBAR MENU -->
+        <div class="sidebar" id="sidebar" aria-hidden="true">
+            <h3>Меню</h3>
+            <a href="index.html">Главная</a>
+            <a href="movies.html">Фильмы</a>
+            <a href="serials.html">Сериалы</a>
+            <a href="animation.html">Анимация</a>
+            <a href="tv.html">ТВ</a>
+            <hr style="border-color:rgba(255,255,255,0.03)">
+            <a href="#">Подписка</a>
+            <a href="#">Мой список</a>
+            <a href="#">Помощь</a>
+        </div>
+        <div class="overlay-click" id="overlay"></div>
+
+        <!-- MAIN -->
+        <main>
+            <div class="page-title">Фильмы</div>
+
+            <!-- SORT BAR -->
+            <div class="sort-bar" role="toolbar" aria-label="Сортировка фильмов">
+                <label for="sort">Сортировать по:</label>
+
+                <div class="sort-select-wrapper">
+                    <select id="sort" class="sort-select" aria-label="Критерий сортировки">
+                        <option value="year">Году</option>
+                        <option value="title">Названию</option>
+                        <option value="popularity">Популярности</option>
+                    </select>
+                    <svg class="select-chev" viewBox="0 0 24 24" width="18" height="18" aria-hidden>
+                        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                    </svg>
+                </div>
+
+                <button id="sort-dir" class="sort-dir" title="Переключить направление сортировки" aria-pressed="false" aria-label="Переключить направление сортировки">
+                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden>
+                        <path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- MOVIES LIST -->
+            <div class="movies-list" id="movies-list">
+                <!-- Пример фильма -->
+                <a class="movie-card"
+                   href="movies/inception.html"
+                   aria-label="Страница фильма «Начало»"
+                   data-year="2010" data-title="Начало" data-popularity="98">
+                    <img class="poster" loading="lazy" src="img/poster-inception.jpg" alt="Начало — постер" width="320" height="180">
+                    <div class="movie-info">
+                        <h2>Начало</h2>
+                        <div class="movie-meta">2010 · Популярность: 98</div>
+                        <p>Фантастический триллер Кристофера Нолана о снах и реальности.</p>
+                    </div>
+                </a>
+
+                <a class="movie-card"
+                   href="movies/interstellar.html"
+                   aria-label="Страница фильма «Интерстеллар»"
+                   data-year="2014" data-title="Интерстеллар" data-popularity="97">
+                    <img class="poster" loading="lazy" src="img/poster-interstellar.jpg" alt="Интерстеллар — постер" width="320" height="180">
+                    <div class="movie-info">
+                        <h2>Интерстеллар</h2>
+                        <div class="movie-meta">2014 · Популярность: 97</div>
+                        <p>Эпическая история о путешествии за пределы нашей галактики в поисках нового дома.</p>
+                    </div>
+                </a>
+
+                <a class="movie-card"
+                   href="movies/avatar.html"
+                   aria-label="Страница фильма «Аватар»"
+                   data-year="2009" data-title="Аватар" data-popularity="96">
+                    <img class="poster" loading="lazy" src="img/poster-avatar.jpg" alt="Аватар — постер" width="320" height="180">
+                    <div class="movie-info">
+                        <h2>Аватар</h2>
+                        <div class="movie-meta">2009 · Популярность: 96</div>
+                        <p>Фантастическая история о планете Пандора и противостоянии людей и На'ви.</p>
+                    </div>
+                </a>
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="footer-inner">
+                <div class="footer-col">
+                    <a href="index.html" class="big-logo-link" title="Новые фильмы — на главную"><img src="img/logo1.png" alt="Новые фильмы" width="160" height="60"></a>
+                    <div class="socials">
+                        <a href="https://vk.com/sitanix" target="_blank" rel="noopener noreferrer"><img src="img/vk.png" alt="VK" width="40" height="40"></a>
+                        <a href="https://t.me/sitanix" target="_blank" rel="noopener noreferrer"><img src="img/tg.png" alt="TG" width="40" height="40"></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>О нас</h4>
+                    <a href="about.html">О компании</a>
+                    <a href="partners.html">Информация для партнёров</a>
+                    <a href="privacy.html">Политика конфиденциальности</a>
+                    <a href="terms.html">Пользовательское соглашение</a>
+                    <a href="ads.html">Реклама</a>
+                    <a href="feedback.html">Оставить отзыв</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Раздел</h4>
+                    <a href="index.html">Домашняя страница</a>
+                    <a href="movies.html">Фильмы</a>
+                    <a href="serials.html">Сериалы</a>
+                    <a href="animation.html">Анимация</a>
+                    <a href="tv.html">Телевидение</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Служба поддержки</h4>
+                    <p style="color:var(--muted);margin-top:0;">Мы всегда готовы помочь. Наши операторы онлайн 0/7</p>
+                    <a href="mailto:NovieFilmi@yavi.ru">NovieFilmi@yavi.ru</a>
+                    <a href="tel:+73950807">(395)-08-07</a>
+                </div>
+            </div>
+
+            <div class="copy">ООО "Новые фильмы"</div>
+        </footer>
+    </div> <!-- .page-overlay -->
+
+    <script>
+        // SIDEBAR
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        function openMenu() { sidebar.classList.add('open'); overlay.classList.add('show'); sidebar.setAttribute('aria-hidden', 'false') }
+        function closeMenu() { sidebar.classList.remove('open'); overlay.classList.remove('show'); sidebar.setAttribute('aria-hidden', 'true') }
+        hamburger.addEventListener('click', () => { if (sidebar.classList.contains('open')) closeMenu(); else openMenu(); });
+        overlay.addEventListener('click', closeMenu);
+
+        // SORT
+        const sortSelect = document.getElementById('sort');
+        const sortDirBtn = document.getElementById('sort-dir');
+        const moviesList = document.getElementById('movies-list');
+        let direction = 'asc';
+
+        function updateSortUI() {
+            if (direction === 'desc') sortDirBtn.classList.add('desc'); else sortDirBtn.classList.remove('desc');
+            sortDirBtn.setAttribute('aria-pressed', direction === 'desc');
+        }
+        updateSortUI();
+
+        function valueFor(card, criterion) {
+            if (criterion === 'year') return parseInt(card.dataset.year || 0, 10);
+            if (criterion === 'popularity') return parseInt(card.dataset.popularity || 0, 10);
+            return (card.dataset.title || '').toString().toLowerCase();
+        }
+
+        function animateReorder(container, newOrder) {
+            const firstRects = new Map();
+            Array.from(container.children).forEach(el => firstRects.set(el, el.getBoundingClientRect()));
+            newOrder.forEach(el => container.appendChild(el));
+            const lastRects = new Map();
+            newOrder.forEach(el => lastRects.set(el, el.getBoundingClientRect()));
+            newOrder.forEach(el => {
+                const first = firstRects.get(el);
+                const last = lastRects.get(el);
+                const dx = first.left - last.left;
+                const dy = first.top - last.top;
+                if (dx || dy) {
+                    el.style.transition = 'none';
+                    el.style.transform = `translate(${dx}px, ${dy}px)`;
+                    el.getBoundingClientRect();
+                    el.style.transition = `transform 450ms cubic-bezier(.2,.8,.2,1)`;
+                    el.style.transform = '';
+                    el.addEventListener('transitionend', () => {
+                        el.style.transition = '';
+                        el.style.transform = '';
+                    }, { once: true });
+                }
+            });
+        }
+
+        function sortMovies() {
+            const criterion = sortSelect.value;
+            const cards = Array.from(moviesList.querySelectorAll('.movie-card'));
+            const sorted = cards.slice().sort((a, b) => {
+                const va = valueFor(a, criterion);
+                const vb = valueFor(b, criterion);
+                if (typeof va === 'number' && typeof vb === 'number') return direction === 'asc' ? va - vb : vb - va;
+                return direction === 'asc' ? va.localeCompare(vb, 'ru') : vb.localeCompare(va, 'ru');
+            });
+            animateReorder(moviesList, sorted);
+        }
+
+        sortSelect.addEventListener('change', sortMovies);
+        sortDirBtn.addEventListener('click', () => {
+            direction = (direction === 'asc') ? 'desc' : 'asc';
+            updateSortUI();
+            sortMovies();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => updateSortUI());
+        sortDirBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                sortDirBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>

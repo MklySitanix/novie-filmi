@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Зверополис — Новые фильмы</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* Локальные стили для страницы фильма */
+        main.movie-page {
+            max-width: 1200px;
+            margin: 18px auto;
+            padding: 18px;
+            box-sizing: border-box;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .poster-card {
+            border-radius: 12px;
+            overflow: hidden;
+            width: 220px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.55);
+        }
+
+            .poster-card img {
+                display: block;
+                width: 100%;
+                height: auto;
+                object-fit: cover;
+            }
+
+        .meta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: space-between
+        }
+
+            .title-row h1 {
+                margin: 0;
+                font-size: 26px;
+                color: var(--text-light)
+            }
+
+        .meta .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .tag {
+            background: rgba(255,255,255,0.03);
+            padding: 6px 10px;
+            border-radius: 8px;
+            color: var(--muted);
+            font-weight: 700;
+            text-decoration: none
+        }
+
+        .meta .studio, .meta .year {
+            color: var(--muted);
+            font-size: 14px
+        }
+
+        .plot {
+            margin-top: 8px;
+            color: var(--muted);
+            line-height: 1.5
+        }
+
+        /* Вставка iframe VK — адаптивный контейнер 16:9 */
+        .embed-wrap {
+            margin-top: 20px;
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 */
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+        }
+
+            .embed-wrap iframe {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                border: 0;
+                display: block;
+                background-color: #000;
+            }
+
+        /* Comments */
+        .comments {
+            margin-top: 22px;
+            display: grid;
+            gap: 12px
+        }
+
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 14px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04))
+        }
+
+        .comment-list {
+            display: grid;
+            gap: 10px
+        }
+
+        .comment {
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.02);
+            color: var(--text-light)
+        }
+
+            .comment .meta {
+                color: var(--muted);
+                font-size: 13px;
+                margin-bottom: 6px
+            }
+
+        .small-muted {
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        /* admin panel */
+        .admin-panel {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            background: #16121a;
+            border: 1px solid rgba(255,255,255,0.03)
+        }
+
+        .btn-plain {
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.04);
+            color: var(--text-light);
+            cursor: pointer
+        }
+
+        @media (max-width:900px) {
+            .movie-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .poster-card {
+                width: 100%;
+                max-width: 360px;
+                margin: 0 auto
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-overlay">
+
+        <!-- HEADER (тот же) -->
+        <header>
+            <div class="hamburger" id="hamburger" aria-label="Меню" role="button" tabindex="0"><div class="bar"></div></div>
+            <div class="logo-placeholder" aria-hidden="true"><a href="../index.html"><img src="../img/logo.png" alt="Логотип" style="height:42px;object-fit:contain"></a></div>
+            <nav class="nav-cats" aria-label="Главная навигация">
+                <a href="../index.html">Главная</a>
+                <a href="../movies.html">Фильмы</a>
+                <a href="../serials.html">Сериалы</a>
+                <a href="../animation.html">Анимация</a>
+                <a href="../tv.html">ТВ</a>
+            </nav>
+            <div class="header-actions">
+                <form id="searchForm" class="search" action="../search.html" method="get" role="search" aria-label="Поиск">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"></circle></svg>
+                    <input name="q" id="searchInput" type="text" placeholder="Поиск фильмов, сериалов..." aria-label="Поиск">
+                </form>
+                <div id="authArea"><a class="btn-login" href="../auth.html">Войти</a></div>
+            </div>
+        </header>
+
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar" aria-hidden="true">
+            <h3>Меню</h3>
+            <a href="../index.html">Главная</a>
+            <a href="../movies.html">Фильмы</a>
+            <a href="../serials.html">Сериалы</a>
+            <a href="../animation.html">Анимация</a>
+            <a href="../tv.html">ТВ</a>
+            <hr style="border-color:rgba(255,255,255,0.03)">
+            <a href="../subscription.html">Подписка</a>
+            <a href="../mylist.html">Мой список</a>
+            <a href="../help.html">Помощь</a>
+        </div>
+        <div class="overlay-click" id="overlay"></div>
+
+        <!-- MAIN -->
+        <main class="movie-page" id="main">
+            <nav style="margin-bottom:12px;color:var(--muted);font-size:14px">
+                <a href="../index.html" class="small-muted">Главная</a> &nbsp;/&nbsp; <a href="../movies.html" class="small-muted">Фильмы</a> &nbsp;/&nbsp; <span class="small-muted">Зверополис</span>
+            </nav>
+
+            <section class="movie-grid" id="movie-grid">
+                <!-- LEFT: poster -->
+                <div class="poster-card" aria-hidden="true">
+                    <img id="posterImg" loading="lazy" src="../img/poster-zootopia.jpg" alt="Зверополис — обложка">
+                </div>
+
+                <!-- RIGHT: meta + player -->
+                <div>
+                    <div class="meta">
+                        <div class="title-row">
+                            <h1 id="movieTitle">Зверополис</h1>
+                            <div>
+                                <button id="wishBtn" class="btn-plain" aria-pressed="false" title="Добавить в список желаемого">♡ В список</button>
+                            </div>
+                        </div>
+
+                        <div class="small-muted" id="movieType">Фильм · 2016</div>
+
+                        <div class="tags" id="movieTags">
+                            <a class="tag" href="../genre/adventure.html">Приключения</a>
+                            <a class="tag" href="../genre/comedy.html">Комедия</a>
+                            <a class="tag" href="../genre/detective.html">Детектив</a>
+                        </div>
+
+                        <div class="studio small-muted" id="movieStudio">Студия: Walt Disney Animation Studios</div>
+
+                        <div class="plot" id="moviePlot">
+                            В красивом многонациональном городе Зверополис молодой кролик Джуди Хоппс становится первым кроличьим полицейским города и объединяется с хитрым лисом Ником Уайльдом, чтобы раскрыть заговор.
+                        </div>
+                    </div>
+
+                    <!-- VK iframe (адаптивный) -->
+                    <div class="embed-wrap" aria-hidden="false">
+                        <iframe src="https://vkvideo.ru/video_ext.php?oid=-198299690&id=456239127&hd=3&autoplay=1"
+                                allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;"
+                                allowfullscreen
+                                title="Зверополис — видео"
+                                loading="lazy"></iframe>
+                    </div>
+
+                    <!-- COMMENTS -->
+                    <div class="comments" id="commentsSection">
+                        <h3>Комментарии</h3>
+
+                        <div class="comment-form" id="commentFormWrap">
+                            <div style="display:flex;gap:8px;align-items:center">
+                                <input id="commentName" type="text" placeholder="Имя (или ник)" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text-light)">
+                                <input id="commentEmail" type="email" placeholder="Email (не публикуется)" style="width:240px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text-light)">
+                            </div>
+                            <textarea id="commentText" rows="4" placeholder="Оставьте свой комментарий..." style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text-light)"></textarea>
+                            <div style="display:flex;gap:8px;align-items:center">
+                                <button id="sendComment" class="btn">Отправить</button>
+                                <div id="commentInfo" class="small-muted">Ваш комментарий появится после модерации.</div>
+                            </div>
+                        </div>
+
+                        <div id="approvedList" class="comment-list" aria-live="polite"></div>
+
+                        <!-- Admin panel (видна если localStorage.isAdmin === '1') -->
+                        <div id="adminPanel" class="admin-panel" style="display:none">
+                            <strong>Админ: список новых комментариев</strong>
+                            <div id="adminList" style="margin-top:8px"></div>
+                            <small class="small-muted">Одобрите или удалите комментарии.</small>
+                        </div>
+
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="footer-inner">
+                <div class="footer-col">
+                    <a href="../index.html" class="big-logo-link"><img src="../img/logo1.png" alt="Новые фильмы" width="160" height="60"></a>
+                    <div class="socials">
+                        <a href="https://vk.com/sitanix" target="_blank" rel="noopener noreferrer"><img src="../img/vk.png" alt="VK" width="40" height="40"></a>
+                        <a href="https://t.me/sitanix" target="_blank" rel="noopener noreferrer"><img src="../img/tg.png" alt="TG" width="40" height="40"></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>О нас</h4>
+                    <a href="../about.html">О компании</a>
+                    <a href="../partners.html">Информация для партнёров</a>
+                    <a href="../privacy.html">Политика конфиденциальности</a>
+                    <a href="../terms.html">Пользовательское соглашение</a>
+                    <a href="../ads.html">Реклама</a>
+                    <a href="../feedback.html">Оставить отзыв</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Раздел</h4>
+                    <a href="../index.html">Домашняя страница</a>
+                    <a href="../movies.html">Фильмы</a>
+                    <a href="../serials.html">Сериалы</a>
+                    <a href="../animation.html">Анимация</a>
+                    <a href="../tv.html">Телевидение</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Служба поддержки</h4>
+                    <p style="color:var(--muted);margin-top:0;">Мы всегда готовы помочь. Наши операторы онлайн 0/7</p>
+                    <a href="mailto:NovieFilmi@yavi.ru">NovieFilmi@yavi.ru</a>
+                    <a href="tel:+73950807">(395)-08-07</a>
+                </div>
+            </div>
+            <div class="copy">ООО "Новые фильмы"</div>
+        </footer>
+
+    </div> <!-- page-overlay -->
+
+    <script src="../main.js"></script>
+    <script>
+        (function () {
+            'use strict';
+            const MOVIE_ID = 'zveropolis';
+            const DATA = window.DATA || [];
+            const movie = DATA.find(m => m.id === 'zveropolis') || {
+                id: 'zveropolis',
+                title: 'Зверополис',
+                year: 2016,
+                type: 'Фильм',
+                genres: ['Приключения', 'Комедия', 'Детектив'],
+                studio: 'Walt Disney Animation Studios',
+                poster: '../img/poster-zootopia.jpg',
+                description: 'В красивом многонациональном городе Зверополис молодой кролик Джуди Хоппс становится первым кроличьим полицейским...'
+            };
+
+            // render fields
+            document.getElementById('movieTitle').textContent = movie.title;
+            document.getElementById('movieType').textContent = (movie.type || 'Фильм') + ' · ' + (movie.year || '');
+            document.getElementById('movieStudio').textContent = 'Студия: ' + (movie.studio || '');
+            document.getElementById('moviePlot').textContent = movie.description || '';
+            document.getElementById('posterImg').src = movie.poster || '../img/poster-zootopia.jpg';
+
+            // render genre tags dynamically
+            const tagsWrap = document.getElementById('movieTags');
+            tagsWrap.innerHTML = '';
+            (movie.genres || ['Приключения']).forEach(g => {
+                const a = document.createElement('a'); a.className = 'tag'; a.href = '../genre/' + encodeURIComponent(g.toLowerCase()) + '.html'; a.textContent = g;
+                tagsWrap.appendChild(a);
+            });
+
+            // wishlist button
+            const wishBtn = document.getElementById('wishBtn');
+            function updateWishUI() {
+                const list = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                const present = list.includes(movie.id);
+                wishBtn.textContent = present ? '✓ В списке' : '♡ В список';
+                wishBtn.setAttribute('aria-pressed', present);
+            }
+            wishBtn.addEventListener('click', () => {
+                const list = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                const idx = list.indexOf(movie.id);
+                if (idx === -1) list.push(movie.id); else list.splice(idx, 1);
+                localStorage.setItem('wishlist', JSON.stringify(list));
+                updateWishUI();
+            });
+            updateWishUI();
+
+            // COMMENTS
+            function readComments() { try { return JSON.parse(localStorage.getItem('comments') || '[]'); } catch (e) { return []; } }
+            function writeComments(list) { localStorage.setItem('comments', JSON.stringify(list)); }
+
+            const approvedListEl = document.getElementById('approvedList');
+            const adminPanel = document.getElementById('adminPanel');
+            const adminListEl = document.getElementById('adminList');
+            const sendBtn = document.getElementById('sendComment');
+            const nameInput = document.getElementById('commentName');
+            const emailInput = document.getElementById('commentEmail');
+            const textInput = document.getElementById('commentText');
+            const commentInfo = document.getElementById('commentInfo');
+
+            // prefill from logged in user if any
+            if (window._NF && window._NF.getCurrentEmail) {
+                const cur = window._NF.getCurrentEmail();
+                if (cur) {
+                    const u = window._NF.getUserByEmail(cur);
+                    if (u) {
+                        nameInput.value = (u.nickname || u.email.split('@')[0] || '');
+                        emailInput.value = u.email;
+                    }
+                }
+            }
+
+            function renderApprovedComments() {
+                const all = readComments();
+                const approved = all.filter(c => c.movieId === MOVIE_ID && c.approved);
+                approvedListEl.innerHTML = '';
+                if (approved.length === 0) {
+                    approvedListEl.innerHTML = '<div class="small-muted">Пока нет комментариев. Станьте первым!</div>';
+                    return;
+                }
+                approved.forEach(c => {
+                    const d = document.createElement('div'); d.className = 'comment';
+                    const meta = document.createElement('div'); meta.className = 'meta'; meta.textContent = `${c.authorName || 'Гость'} · ${new Date(c.ts).toLocaleString()}`;
+                    const body = document.createElement('div'); body.textContent = c.text;
+                    d.appendChild(meta); d.appendChild(body);
+                    approvedListEl.appendChild(d);
+                });
+            }
+
+            function renderAdmin() {
+                const isAdmin = localStorage.getItem('isAdmin') === '1';
+                if (!isAdmin) { adminPanel.style.display = 'none'; return; }
+                adminPanel.style.display = 'block';
+                const all = readComments();
+                const pending = all.filter(c => c.movieId === MOVIE_ID && !c.approved);
+                adminListEl.innerHTML = '';
+                if (pending.length === 0) { adminListEl.innerHTML = '<div class="small-muted">Нет новых комментариев</div>'; return; }
+                pending.forEach(c => {
+                    const box = document.createElement('div'); box.style.display = 'flex'; box.style.gap = '8px'; box.style.alignItems = 'center'; box.style.marginBottom = '8px';
+                    const left = document.createElement('div'); left.style.flex = '1';
+                    left.innerHTML = `<div style="font-weight:700">${c.authorName || 'Гость'} <span style="color:var(--muted);font-weight:400">· ${new Date(c.ts).toLocaleString()}</span></div><div style="color:var(--muted);margin-top:6px">${c.text}</div>`;
+                    const actions = document.createElement('div');
+                    const approveBtn = document.createElement('button'); approveBtn.className = 'btn-plain'; approveBtn.textContent = 'Одобрить';
+                    const delBtn = document.createElement('button'); delBtn.className = 'btn-plain'; delBtn.textContent = 'Удалить';
+                    approveBtn.addEventListener('click', () => {
+                        const allc = readComments();
+                        const idx = allc.findIndex(x => x.id === c.id);
+                        if (idx >= 0) { allc[idx].approved = true; writeComments(allc); renderApprovedComments(); renderAdmin(); }
+                    });
+                    delBtn.addEventListener('click', () => {
+                        const allc = readComments().filter(x => x.id !== c.id);
+                        writeComments(allc); renderAdmin(); renderApprovedComments();
+                    });
+                    actions.appendChild(approveBtn); actions.appendChild(delBtn);
+                    box.appendChild(left); box.appendChild(actions);
+                    adminListEl.appendChild(box);
+                });
+            }
+
+            function addComment(authorName, authorEmail, text) {
+                const id = 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+                const comment = { id, movieId: MOVIE_ID, authorName, authorEmail, text, ts: Date.now(), approved: false };
+                const all = readComments(); all.push(comment); writeComments(all);
+                commentInfo.textContent = 'Комментарий отправлен — появится после модерации.';
+                textInput.value = '';
+                renderAdmin();
+            }
+
+            sendBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const name = nameInput.value.trim() || 'Гость';
+                const email = emailInput.value.trim() || '';
+                const text = textInput.value.trim();
+                if (!text) { commentInfo.textContent = 'Введите текст комментария.'; return; }
+                addComment(name, email, text);
+            });
+
+            renderApprovedComments();
+            renderAdmin();
+
+            // react to storage changes (other tabs)
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'comments' || e.key === 'isAdmin') { renderApprovedComments(); renderAdmin(); updateWishUI(); }
+            });
+
+            // track that user viewed this movie (for continue watching)
+            (function trackView() {
+                const list = JSON.parse(localStorage.getItem('continueWatching') || '[]');
+                const filtered = list.filter(x => x.id !== movie.id);
+                filtered.unshift({ id: movie.id, title: movie.title, url: './zveropolis.html', poster: movie.poster, ts: Date.now(), progress: 0 });
+                localStorage.setItem('continueWatching', JSON.stringify(filtered.slice(0, 10)));
+            })();
+
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Вход / Регистрация — Новые фильмы</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Небольшие локальные стили для страницы auth (не ломают основной style.css) */
+        body {
+            background-position: center;
+        }
+
+        .auth-wrap {
+            max-width: 940px;
+            margin: 48px auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 28px;
+            align-items: start;
+        }
+
+        /* Левый бок — пояснение */
+        .auth-info {
+            color: var(--text-light);
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+            .auth-info h1 {
+                margin-top: 0;
+                font-size: 28px;
+                color: var(--accent);
+            }
+
+            .auth-info p {
+                color: var(--muted);
+                line-height: 1.5;
+            }
+
+        /* Правый блок — формы */
+        .auth-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.04);
+            color: var(--text-light);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+            .tab-btn.active {
+                background: linear-gradient(90deg, rgba(123,97,255,0.18), rgba(123,97,255,0.12));
+                border-color: rgba(123,97,255,0.28);
+                box-shadow: 0 8px 20px rgba(123,97,255,0.08);
+            }
+
+        form.auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+            .field label {
+                color: var(--muted);
+                font-size: 13px;
+            }
+
+            .field input[type="email"],
+            .field input[type="password"],
+            .field input[type="text"] {
+                padding: 10px 12px;
+                border-radius: 10px;
+                border: 1px solid rgba(255,255,255,0.06);
+                background: transparent;
+                color: var(--text-light);
+                outline: none;
+                font-size: 15px;
+            }
+
+            .field input:focus {
+                box-shadow: 0 8px 20px rgba(123,97,255,0.08);
+                border-color: rgba(123,97,255,0.28);
+            }
+
+        .checkbox-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+            .checkbox-row input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+            }
+
+        .btn-primary {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 0;
+            background: linear-gradient(90deg,var(--accent), #6c52e6);
+            color: white;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+            .btn-primary[disabled] {
+                opacity: 0.55;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-size: 13px;
+        }
+
+        .small-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        .link-ghost {
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+            .link-ghost:hover {
+                color: var(--text-light);
+                text-decoration: underline;
+            }
+
+        /* адаптив: одна колонка */
+        @media (max-width: 960px) {
+            .auth-wrap {
+                grid-template-columns: 1fr;
+                padding: 16px;
+                margin: 24px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-overlay">
+
+        <!-- Можно вставить header тут вручную, но если у тебя общий header, оставь пустым/как есть -->
+        <header>
+            <div class="hamburger" id="hamburger" aria-label="Меню" role="button" tabindex="0"><div class="bar"></div></div>
+
+            <div class="logo-placeholder" aria-hidden="true">
+                <a href="index.html"><img src="img/logo.png" alt="Логотип" style="height:42px;object-fit:contain"></a>
+            </div>
+
+            <nav class="nav-cats" aria-label="Главная навигация">
+                <a href="index.html" class="active">Главная</a>
+                <a href="movies.html">Фильмы</a>
+                <a href="serials.html">Сериалы</a>
+                <a href="animation.html">Анимация</a>
+                <a href="tv.html">ТВ</a>
+            </nav>
+
+            <div class="header-actions">
+                <!-- Поиск: отправляет на search.html?q=... -->
+                <form id="searchForm" class="search" action="search.html" method="get" role="search" aria-label="Поиск">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"></circle></svg>
+                    <input name="q" id="searchInput" type="text" placeholder="Поиск фильмов, сериалов..." aria-label="Поиск">
+                </form>
+
+                <!-- Войти — перенаправление на страницу авторизации (auth.html) -->
+                <!-- заменяем на единый контейнер -->
+                <div id="authArea">
+                    <a id="accountBtn" class="btn-login" href="auth.html">Войти</a>
+                </div>
+
+            </div>
+        </header>
+
+        <main>
+            <div class="auth-wrap">
+
+                <!-- Левый поясняющий блок -->
+                <aside class="auth-info">
+                    <h1>Войдите или зарегистрируйтесь</h1>
+                    <p>
+                        Создай быстро учётную запись.
+                    </p>
+                    <p class="muted">Преимущества аккаунта: сохранение «Продолжить просмотр», список желаемого, персональные рекомендации и доступ к подписке.</p>
+                </aside>
+
+                <!-- Правый блок — вкладки и формы -->
+                <section class="auth-card" aria-labelledby="authHeading">
+                    <div style="text-align:center;margin-bottom:10px">
+                        <strong id="authHeading" style="font-size:18px;color:var(--text-light)">Авторизация / Регистрация</strong>
+                    </div>
+
+                    <div class="tabs" role="tablist" aria-label="Авторизация и регистрация">
+                        <button id="tabLogin" class="tab-btn active" role="tab" aria-selected="true">Вход</button>
+                        <button id="tabRegister" class="tab-btn" role="tab" aria-selected="false">Регистрация</button>
+                    </div>
+
+                    <!-- LOGIN FORM -->
+                    <form id="loginForm" class="auth-form" aria-hidden="false" novalidate>
+                        <div class="field">
+                            <label for="loginEmail">Электронная почта</label>
+                            <input id="loginEmail" name="email" type="email" inputmode="email" required autocomplete="email" placeholder="you@example.com">
+                        </div>
+
+                        <div class="field">
+                            <label for="loginPass">Пароль</label>
+                            <input id="loginPass" name="password" type="password" required autocomplete="current-password" placeholder="Ваш пароль">
+                        </div>
+
+                        <div class="small-actions">
+                            <a href="#" class="link-ghost" id="forgotPassword">Забыли пароль?</a>
+                            <div style="display:flex;gap:8px;align-items:center">
+                                <label style="color:var(--muted);font-size:13px"><input id="rememberMe" type="checkbox"> Запомнить</label>
+                            </div>
+                        </div>
+
+                        <div id="loginError" class="error" role="alert" aria-live="polite" style="min-height:18px"></div>
+                        <button class="btn-primary" id="loginSubmit" type="submit">Войти</button>
+                    </form>
+
+                    <!-- REGISTER FORM (по умолчанию скрыта) -->
+                    <form id="registerForm" class="auth-form" aria-hidden="true" style="display:none" novalidate>
+                        <div style="text-align:center;margin-bottom:6px;color:var(--muted)">Создать новый аккаунт</div>
+
+                        <div class="field">
+                            <label for="regEmail">Электронная почта</label>
+                            <input id="regEmail" name="email" type="email" inputmode="email" required autocomplete="email" placeholder="you@example.com">
+                        </div>
+
+                        <div class="field">
+                            <label for="regPass">Придумайте пароль</label>
+                            <input id="regPass" name="password" type="password" required autocomplete="new-password" placeholder="Минимум 8 символов">
+                        </div>
+
+                        <div class="field">
+                            <label for="regPass2">Повторите пароль</label>
+                            <input id="regPass2" name="password2" type="password" required autocomplete="new-password" placeholder="Повторите пароль">
+                        </div>
+
+                        <label class="checkbox-row">
+                            <input id="agreeCheckbox" type="checkbox" required>
+                            <span>Я согласен(на) с <a href="terms.html" target="_blank" class="link-ghost">пользовательским соглашением</a> и <a href="privacy.html" target="_blank" class="link-ghost">политикой конфиденциальности</a></span>
+                        </label>
+
+                        <div id="regError" class="error" role="alert" aria-live="polite" style="min-height:18px"></div>
+                        <button class="btn-primary" id="regSubmit" type="submit" disabled>Зарегистрироваться</button>
+                    </form>
+
+                </section>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-inner">
+                <div class="footer-col">
+                    <a href="index.html" class="big-logo-link" title="Новые фильмы — на главную"><img src="img/logo1.png" alt="Новые фильмы" width="160" height="60"></a>
+                    <div class="socials">
+                        <a href="https://vk.com/sitanix" target="_blank" rel="noopener noreferrer"><img src="img/vk.png" alt="VK" width="40" height="40"></a>
+                        <a href="https://t.me/sitanix" target="_blank" rel="noopener noreferrer"><img src="img/tg.png" alt="TG" width="40" height="40"></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>О нас</h4>
+                    <a href="about.html">О компании</a>
+                    <a href="partners.html">Информация для партнёров</a>
+                    <a href="privacy.html">Политика конфиденциальности</a>
+                    <a href="terms.html">Пользовательское соглашение</a>
+                    <a href="ads.html">Реклама</a>
+                    <a href="feedback.html">Оставить отзыв</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Раздел</h4>
+                    <a href="index.html">Домашняя страница</a>
+                    <a href="movies.html">Фильмы</a>
+                    <a href="serials.html">Сериалы</a>
+                    <a href="animation.html">Анимация</a>
+                    <a href="tv.html">Телевидение</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Служба поддержки</h4>
+                    <p style="color:var(--muted);margin-top:0;">Мы всегда готовы помочь. Наши операторы онлайн 0/7</p>
+                    <a href="mailto:NovieFilmi@yavi.ru">NovieFilmi@yavi.ru</a>
+                    <a href="tel:+73950807">(395)-08-07</a>
+                </div>
+            </div>
+
+            <div class="copy">ООО "Новые фильмы"</div>
+        </footer>
+    </div>
+
+    <script>
+        // auth page script — заглушка/демо для регистрации и входа
+        (function () {
+            'use strict';
+
+            // элементы табов
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+
+            function showLogin() {
+                tabLogin.classList.add('active'); tabLogin.setAttribute('aria-selected', 'true');
+                tabRegister.classList.remove('active'); tabRegister.setAttribute('aria-selected', 'false');
+                loginForm.style.display = 'flex'; loginForm.setAttribute('aria-hidden', 'false');
+                registerForm.style.display = 'none'; registerForm.setAttribute('aria-hidden', 'true');
+            }
+            function showRegister() {
+                tabRegister.classList.add('active'); tabRegister.setAttribute('aria-selected', 'true');
+                tabLogin.classList.remove('active'); tabLogin.setAttribute('aria-selected', 'false');
+                registerForm.style.display = 'flex'; registerForm.setAttribute('aria-hidden', 'false');
+                loginForm.style.display = 'none'; loginForm.setAttribute('aria-hidden', 'true');
+            }
+            tabLogin.addEventListener('click', showLogin);
+            tabRegister.addEventListener('click', showRegister);
+
+            // helper: простая валидация email
+            function isEmail(val) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+            }
+
+            // crypto hashing (SHA-256) — возвращает hex
+            async function hashPassword(str) {
+                if (window.crypto && crypto.subtle && crypto.subtle.digest) {
+                    const enc = new TextEncoder();
+                    const data = enc.encode(str);
+                    const hash = await crypto.subtle.digest('SHA-256', data);
+                    // convert to hex
+                    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+                } else {
+                    // fallback (НЕ безопасно) — base64 of the string
+                    return btoa(str);
+                }
+            }
+
+            // storage helpers
+            function readUsers() { try { return JSON.parse(localStorage.getItem('users') || '[]'); } catch (e) { return []; } }
+            function saveUsers(list) { localStorage.setItem('users', JSON.stringify(list)); }
+
+            // registration logic
+            const regEmail = document.getElementById('regEmail');
+            const regPass = document.getElementById('regPass');
+            const regPass2 = document.getElementById('regPass2');
+            const agreeCheckbox = document.getElementById('agreeCheckbox');
+            const regSubmit = document.getElementById('regSubmit');
+            const regError = document.getElementById('regError');
+
+            function updateRegButton() {
+                const ok = isEmail(regEmail.value) && regPass.value.length >= 8 && regPass.value === regPass2.value && agreeCheckbox.checked;
+                regSubmit.disabled = !ok;
+            }
+
+            [regEmail, regPass, regPass2, agreeCheckbox].forEach(el => el.addEventListener('input', updateRegButton));
+            agreeCheckbox.addEventListener('change', updateRegButton);
+
+            registerForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                regError.textContent = '';
+
+                const email = regEmail.value.trim().toLowerCase();
+                const pass = regPass.value;
+                const pass2 = regPass2.value;
+
+                if (!isEmail(email)) { regError.textContent = 'Введите корректный email.'; return; }
+                if (pass.length < 8) { regError.textContent = 'Пароль должен быть не менее 8 символов.'; return; }
+                if (pass !== pass2) { regError.textContent = 'Пароли не совпадают.'; return; }
+                if (!agreeCheckbox.checked) { regError.textContent = 'Необходимо принять условия.'; return; }
+
+                // check existing
+                const users = readUsers();
+                if (users.some(u => u.email === email)) { regError.textContent = 'Пользователь с таким email уже существует.'; return; }
+
+                // hash and save
+                try {
+                    const hashed = await hashPassword(pass);
+                    const user = { email, passwordHash: hashed, created: Date.now() };
+                    users.push(user);
+                    saveUsers(users);
+
+                    // auto-login: set currentUser and redirect (переход на index)
+                    localStorage.setItem('currentUser', email);
+                    // небольшая задержка для UX
+                    regSubmit.textContent = 'Готово!';
+                    setTimeout(() => { location.href = 'index.html'; }, 700);
+                } catch (err) {
+                    console.error(err);
+                    regError.textContent = 'Ошибка при сохранении. Попробуйте ещё раз.';
+                }
+            });
+
+            // login logic
+            const loginEmail = document.getElementById('loginEmail');
+            const loginPass = document.getElementById('loginPass');
+            const loginError = document.getElementById('loginError');
+            const loginFormEl = document.getElementById('loginForm');
+
+            loginFormEl.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                loginError.textContent = '';
+                const email = loginEmail.value.trim().toLowerCase();
+                const pass = loginPass.value;
+
+                if (!isEmail(email)) { loginError.textContent = 'Введите корректный email.'; return; }
+                if (!pass) { loginError.textContent = 'Введите пароль.'; return; }
+
+                const users = readUsers();
+                const user = users.find(u => u.email === email);
+                if (!user) { loginError.textContent = 'Пользователь не найден.'; return; }
+
+                try {
+                    const hashed = await hashPassword(pass);
+                    if (hashed === user.passwordHash) {
+                        // success
+                        localStorage.setItem('currentUser', email);
+                        loginError.style.color = 'lightgreen';
+                        loginError.textContent = 'Вход выполнен. Перенаправление...';
+                        setTimeout(() => location.href = 'index.html', 600);
+                    } else {
+                        loginError.textContent = 'Неверный пароль.';
+                    }
+                } catch (err) {
+                    console.error(err);
+                    loginError.textContent = 'Ошибка аутентификации.';
+                }
+            });
+
+            // little UX: focus first field
+            loginEmail.focus();
+
+            // optional: if already logged in, show quick link
+            if (localStorage.getItem('currentUser')) {
+                // можно показать подсказку или сразу редиректить
+                // console.log('Already logged in as', localStorage.getItem('currentUser'));
+            }
+
+        })();
+    </script>
+</body>
+</html>
